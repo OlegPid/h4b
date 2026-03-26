@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="mn" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel4box Үйлчилгээний Танилцуулга</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Typography tweaks */
+        .prose-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: #334155;
+        }
+        .dark .prose-content p {
+            color: #cbd5e1;
+        }
+        
+        .prose-content h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #0f172a;
+            scroll-margin-top: 100px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        .dark .prose-content h2 {
+            color: #f8fafc;
+            border-color: #334155;
+        }
+
+        .prose-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1e293b;
+            scroll-margin-top: 100px;
+        }
+        .dark .prose-content h3 {
+            color: #e2e8f0;
+        }
+
+        .prose-content h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #334155;
+        }
+        .dark .prose-content h4 {
+            color: #cbd5e1;
+        }
+
+        .prose-content ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-content li {
+            margin-bottom: 0.5rem;
+            color: #334155;
+        }
+        .dark .prose-content li {
+            color: #cbd5e1;
+        }
+
+        .prose-content strong {
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .dark .prose-content strong {
+            color: #f1f5f9;
+        }
+
+        .prose-content a {
+            color: #0284c7;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+        .dark .prose-content a {
+            color: #38bdf8;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .dark .table-container {
+            border-color: #334155;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        th {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .dark th {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+        
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        .dark td {
+            border-color: #334155;
+            color: #cbd5e1;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Reading Progress Bar */
+        #progress-bar {
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #6366f1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1001;
+            transition: width 0.1s;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-slate-900 transition-colors duration-300 antialiased min-h-screen flex flex-col">
+
+    <!-- Reading Progress -->
+    <div id="progress-bar"></div>
+
+    <!-- Header -->
+    <header class="fixed w-full top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-brand-600 text-white p-1.5 rounded-lg">
+                    <i data-lucide="package" class="w-5 h-5"></i>
+                </div>
+                <span class="font-bold text-xl text-slate-900 dark:text-white tracking-tight">Hotel4box</span>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="flex-grow pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-12">
+                
+                <!-- Sidebar (Table of Contents) - Desktop -->
+                <aside class="hidden lg:block lg:col-span-3">
+                    <div class="sticky top-28 overflow-y-auto max-h-[calc(100vh-8rem)]">
+                        <nav id="toc-desktop" class="space-y-1">
+                            <h4 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Гарчиг</h4>
+                            <!-- Links will be injected here via JS -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="lg:col-span-9 xl:col-span-9">
+                    
+                    <!-- Article Header -->
+                    <div class="mb-10 text-center sm:text-left">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-900 dark:bg-brand-900/30 dark:text-brand-100 mb-4">
+                            Тээвэр зууч
+                        </span>
+                        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6 leading-tight">
+                            Hotel4box Үйлчилгээний Танилцуулга
+                        </h1>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 pb-8">
+                             <span class="flex items-center gap-1">
+                                <i data-lucide="globe" class="w-4 h-4"></i> MongolTown
+                            </span>
+                            <span>&bull;</span>
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="truck" class="w-4 h-4"></i> USA to Mongolia
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Article Body -->
+                    <article class="prose-content">
+                        
+                        <!-- Hero Image -->
+                        <div class="mb-8 rounded-xl overflow-hidden shadow-lg">
+                            <img src="https://mongoltown.com/image/catalog/mongoltown/information%20page/pricing%2031%20_1_.png" alt="Hotel4box Banner" class="w-full h-auto object-cover">
+                        </div>
+
+                        <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Хэрвээ та эсвэл танай байгууллага гадаадаас худалдан авалт хийгээд бараагаа Монгол руу хямдаар хүргүүлэх бол бид танд <strong>Hotel4box</strong> үйлчилгээгээ санал болгож байна.
+                        </p>
+
+                        <h2 id="registration">Бүртгэл ба Хаяг авах</h2>
+                        <p>
+                            Юуны түрүүнд манай ачааны бүртгэлийн системд бүртгүүлэн өөрийн шуудангийн хайрцаг буюу мэйлбокс дугаараа (үнэгүй) авах ёстой.
+                        </p>
+                        <ul class="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <li><strong>Вэбсайт:</strong> <a href="http://www.hotel4box.com/" target="_blank">www.hotel4box.com</a></li>
+                            <li><strong>Видео заавар:</strong> <a href="https://www.facebook.com/watch/495013280512726/320980362062077" target="_blank">Facebook Watch</a></li>
+                        </ul>
+
+                        <h3 id="how-to-use">Хэрхэн ашиглах вэ?</h3>
+                        <p>
+                            Нэгэнт бүртгүүлсэн бол бараа илгээх хаягаа өөрийн мэйлбокс оруулан манай аль нэг салбар луу илгээнэ. Нэвтрэн орсны дараа манай салбарын хаягууд дотор таны мэйлбокс дугаар харагдана.
+                        </p>
+                        <p>
+                            Манай руу илгээгдсэн ачаагаа хэзээ бид хүлээж авсаныг, хэзээ Монгол руу гарсаныг, хэзээ Монголд буух, түүнчлэн ачааны жин, ачаагаа салгах/нэгтгэх, илгээлтийн төлбөр тооцоогоо Hotel4box дээр та өөрөө хянана.
+                        </p>
+                        <p>
+                            Аль нэг сайт дээр худалдаа хийнгүүтээ барааны болон хүлээн авагчийн (Монгол дахь) мэдээллээ Hotel4box дээр үүсгэж оруулна.
+                        </p>
+
+                        <h2 id="important-info">Анхаарах зүйлс</h2>
+                        <ul class="space-y-2">
+                            <li>Манайх захиалгын сонин сэтгүүл тээвэрлэхгүй. Сурталчилгааны сонин сэтгүүлийг мөнгө төлсөн захиалгын сонин сэтгүүлээс ялгаж мэдэх боломжгүй учир та ямар нэг хэвлэл захиалж болохгүй.</li>
+                            <li>Терроризм болон бусад гэмт хэргээс сэрэмжлэх үүднээс бид ачаа бүрт шалгалт хийнэ.</li>
+                            <li>Ачаа манай аль нэг салбар дээр ирсэнээс хойш бүртгэгдэж манай систем руу ортол <strong>24-48 ажлын цаг</strong> болно. DE салбар бол 48-72 ажлын цаг.</li>
+                            <li>Ачааны минимум төлбөр <strong>1кг-р бодогдоно</strong>. Хэрвээ та кг хүрэхгүй жижиг ачаа авч байгаа бол өөр ачаатай нэгтгэж нэгдсэн жингээс нь тээврээ бодуулах боломжтой.</li>
+                            <li>Мэйлбокс бичээгүй мөн урьдчилан мэдүүлэг хийгээгүй ачааг дахиж процесс хийхэд <strong>$5</strong> төлбөртэй.</li>
+                        </ul>
+
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-4 my-6">
+                            <h4 class="text-yellow-800 dark:text-yellow-200 mt-0">Тээврийн Даатгал</h4>
+                            <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-0">
+                                Олон улсын шуудангийн жишгээр тээвэрлэгдэж байгаа ачаанд бидний хариуцлага зөвхөн <strong>$60</strong> хүртэл байна. Хэрвээ та үнэ бүхий зүйлс тээвэрлүүлэх гэж байгаа бол бараагаа АНУ-с гарахаас өмнө даатгал авах хэрэгтэй.
+                            </p>
+                        </div>
+
+                        <h2 id="tariffs">Шуудангийн Ачааны тариф</h2>
+
+                        <!-- LA Table -->
+                        <h3 id="tariff-la">Los Angeles - Ulaanbaatar</h3>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 mb-2">
+                            20675 S Western ave, Ste 112 #Mxxxxx, Torrance, CA 90501
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Төрөл</th>
+                                        <th>Тариф</th>
+                                        <th>Handling fee</th>
+                                        <th>Нэгтгэх</th>
+                                        <th>Хуваарь</th>
+                                        <th>Төлбөр</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Агаар (3-7 days)</td>
+                                        <td>$9.99/kg</td>
+                                        <td>$0</td>
+                                        <td>$0</td>
+                                        <td rowspan="2">Friday (Cutoff Thur 9am)</td>
+                                        <td rowspan="3">Paypal, VISA, MasterCard, Amex</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Агаар Express (2 day)</td>
+                                        <td>$11.99/kg</td>
+                                        <td>$0</td>
+                                        <td>$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Газар</td>
+                                        <td>$0.00064/cm³ ($50 min)</td>
+                                        <td>$0</td>
+                                        <td>-</td>
+                                        <td>Every month</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- NJ Table -->
+                        <h3 id="tariff-nj">New Jersey - Ulaanbaatar</h3>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 mb-2">
+                            55 Triangle Blvd Unit B, Carlstadt, NJ 07072 (Clothing/Shoes Tax Free)
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Төрөл</th>
+                                        <th>Тариф</th>
+                                        <th>Handling fee</th>
+                                        <th>Нэгтгэх</th>
+                                        <th>Хуваарь</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Агаар (3-7 days)</td>
+                                        <td>$10.99/kg</td>
+                                        <td>$2</td>
+                                        <td>$0</td>
+                                        <td>Friday (Cutoff Fri 9am)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Агаар Express (2 day)</td>
+                                        <td>$12.99/kg</td>
+                                        <td>$2</td>
+                                        <td>$0</td>
+                                        <td>Friday (Cutoff Thu 9am)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Газар</td>
+                                        <td>$0.00064/cm³ ($50 min)</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>Monthly</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- DE Table -->
+                        <h3 id="tariff-de">Delaware - Ulaanbaatar</h3>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 mb-2">
+                            330 Robinson Ln, Wilmington, DE 19805 (All Tax Free) <span class="text-red-500 font-bold block sm:inline">⚠️ No iPhones accepted here</span>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Төрөл</th>
+                                        <th>Тариф</th>
+                                        <th>Handling fee</th>
+                                        <th>Нэгтгэх</th>
+                                        <th>Хуваарь</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Агаар (3-7 days)</td>
+                                        <td>$10.99/kg</td>
+                                        <td>$3</td>
+                                        <td>$3</td>
+                                        <td>Friday (Cutoff Fri 9am)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Агаар Express (2 day)</td>
+                                        <td>$12.99/kg</td>
+                                        <td>$3</td>
+                                        <td>$3</td>
+                                        <td>Friday (Cutoff Thu 9am)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Газар</td>
+                                        <td>$0.00072/cm³ ($50 min)</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>Monthly</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h2 id="dimensions">Ачааны овор хэмжээ</h2>
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <p>
+                                    Таны ачаа жинтэйгээ харьцуулахад овор нь их бол эйрлайн биднээс тухайн ачааг жингээр нь биш овроор нь бодож авдаг. Тооцоолохдоо доорх 2 хэмжигдэхүүний аль ихээр бодно:
+                                </p>
+                                <ul class="list-decimal">
+                                    <li>Ачааны өөрийн жин (КГ)</li>
+                                    <li>Эзлэхүүний жин: (Урт<sub>см</sub> x Өргөн<sub>см</sub> x Өндөр<sub>см</sub>) / 6000</li>
+                                </ul>
+                                <p class="text-sm text-slate-500 italic">Хэрвээ инчээр эзлэхүүн бодсон бол 366-д хуваана.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+                                <img src="https://mongoltown.com/image/catalog/mongoltown/information%20page/shipping-boxes-dimensions-_1__1_.png" alt="Box Dimensions" class="mx-auto w-full max-w-[200px]">
+                            </div>
+                        </div>
+
+                        <h3 id="additional-fees">Нэмэгдэл үйлчилгээний хураамжууд</h3>
+                        <ul class="grid sm:grid-cols-2 gap-4">
+                            <li class="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                                <span class="font-bold block mb-1">Дахин боолгох</span>
+                                $30/цаг (Материалын зардал нэмэгдэнэ)
+                            </li>
+                            <li class="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                                <span class="font-bold block mb-1">Зураг даруулах</span>
+                                3ш зураг - $5
+                            </li>
+                            <li class="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg sm:col-span-2">
+                                <span class="font-bold block mb-1">Агуулахын төлбөр</span>
+                                14 хоног хэтэрвэл Storage charge бодогдоно
+                            </li>
+                        </ul>
+
+                        <h2 id="timing">Хүргэлтийн хугацаа</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                            <div class="p-4 border rounded-lg border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
+                                <h4 class="mt-0 text-blue-800 dark:text-blue-200">Air Express</h4>
+                                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-0">2 хоног</p>
+                            </div>
+                            <div class="p-4 border rounded-lg border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800">
+                                <h4 class="mt-0 text-green-800 dark:text-green-200">Энгийн Агаар</h4>
+                                <p class="text-2xl font-bold text-green-600 dark:text-green-400 mb-0">3-7 хоног</p>
+                            </div>
+                            <div class="p-4 border rounded-lg border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-800">
+                                <h4 class="mt-0 text-purple-800 dark:text-purple-200">Газар/Далай</h4>
+                                <p class="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-0">60-90 хоног</p>
+                            </div>
+                        </div>
+                        <p class="text-center text-sm text-slate-500 mt-2">Гаалийн бүрдүүлэлт: 1-2 ажлын өдөр</p>
+
+                        <h2 id="prohibited">Хориглосон зүйлс</h2>
+                        <div class="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg p-6">
+                            <h4 class="text-red-700 dark:text-red-300 mt-0">Эрүүгийн хуулиар хориглосон:</h4>
+                            <ul class="mb-6">
+                                <li>Хор болон хордуулах материалууд (химийн элементүүд)</li>
+                                <li>Мансууруулах бодис (бүх төрлийн)</li>
+                                <li>Галт зэвсэг, түүний эд анги, сум дарь, хутга, тэсэрч дэлбэрэх зүйлс</li>
+                                <li>Садар самуун сурталчилсан хэвлэл, бичлэгүүд</li>
+                            </ul>
+
+                            <h4 class="text-red-700 dark:text-red-300 mt-0">Нисэхийн аюулгүй байдалд нөлөөлөх:</h4>
+                            <div class="grid sm:grid-cols-2 gap-x-8">
+                                <ul>
+                                    <li>Тэсэрч дэлбэрэх зүйлс</li>
+                                    <li>Шахсан хий, хуурай мөс, гал унтраагч</li>
+                                    <li>Шатамхай бодис (будаг, бензин, үнэртэй ус)</li>
+                                    <li>Литиум зай, мөнгөн ус</li>
+                                </ul>
+                                <ul>
+                                    <li>Соронзтой зүйлс (чанга яригч)</li>
+                                    <li>Амьтны гаралтай түүхий эд</li>
+                                    <li>Цацраг идэвхт материал</li>
+                                    <li>Аюултай гэсэн тэмдэглэгээтэй бүх бараа</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </article>
+
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile TOC Float -->
+    <div class="lg:hidden fixed bottom-6 right-6 z-40">
+        <button id="mobile-toc-btn" class="bg-brand-600 text-white p-4 rounded-full shadow-lg hover:bg-brand-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+            <i data-lucide="list" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <!-- Mobile TOC Modal -->
+    <div id="mobile-toc-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm transition-opacity opacity-0">
+        <div class="absolute bottom-0 w-full bg-white dark:bg-slate-900 rounded-t-2xl p-6 shadow-2xl transform translate-y-full transition-transform duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Гарчиг</h3>
+                <button id="close-mobile-toc" class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <nav id="toc-mobile" class="space-y-3 max-h-[60vh] overflow-y-auto pb-8">
+                <!-- Links injected here -->
+            </nav>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="bg-slate-200 dark:bg-slate-800 p-1.5 rounded-lg">
+                    <i data-lucide="package" class="w-5 h-5 text-slate-700 dark:text-slate-300"></i>
+                </div>
+                <span class="font-semibold text-slate-700 dark:text-slate-300">Hotel4box Info</span>
+            </div>
+            <p class="text-slate-500 text-sm">© <script>document.write(new Date().getFullYear())</script> All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --- Dark Mode Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Check local storage or system preference
+        if (localStorage.theme === 'dark') { //|| (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+
+        // --- Auto-Generate Table of Contents ---
+        const article = document.querySelector('article');
+        const headers = article.querySelectorAll('h2, h3');
+        const tocDesktop = document.getElementById('toc-desktop');
+        const tocMobile = document.getElementById('toc-mobile');
+
+        headers.forEach((header, index) => {
+            // Create ID if missing
+            if (!header.id) {
+                header.id = `section-${index}`;
+            }
+
+            // Create Link Logic
+            const createLink = (isMobile) => {
+                const link = document.createElement('a');
+                link.href = `#${header.id}`;
+                link.textContent = header.textContent;
+                link.className = `block text-sm transition-colors duration-200 ${
+                    header.tagName === 'H3' ? 'pl-4 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' : 'font-medium text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400'
+                }`;
+                if (isMobile) {
+                    link.className += " py-2 border-b border-slate-100 dark:border-slate-800 last:border-0";
+                    link.addEventListener('click', toggleMobileToc);
+                }
+                return link;
+            };
+
+            tocDesktop.appendChild(createLink(false));
+            tocMobile.appendChild(createLink(true));
+        });
+
+        // --- Mobile TOC Interactions ---
+        const mobileTocBtn = document.getElementById('mobile-toc-btn');
+        const mobileTocModal = document.getElementById('mobile-toc-modal');
+        const closeMobileToc = document.getElementById('close-mobile-toc');
+        const modalContent = mobileTocModal.querySelector('div');
+
+        function toggleMobileToc() {
+            const isHidden = mobileTocModal.classList.contains('hidden');
+            
+            if (isHidden) {
+                mobileTocModal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                setTimeout(() => {
+                    mobileTocModal.classList.remove('opacity-0');
+                    modalContent.classList.remove('translate-y-full');
+                }, 10);
+            } else {
+                mobileTocModal.classList.add('opacity-0');
+                modalContent.classList.add('translate-y-full');
+                setTimeout(() => {
+                    mobileTocModal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        mobileTocBtn.addEventListener('click', toggleMobileToc);
+        closeMobileToc.addEventListener('click', toggleMobileToc);
+
+        // --- Reading Progress Bar ---
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (scrollTop / scrollHeight) * 100;
+            document.getElementById('progress-bar').style.width = scrolled + "%";
+        });
+        function resizeParent() {
+          parent.postMessage(
+            { type: 'hotel4box-resize', height: document.body.scrollHeight },
+            '*'
+          );
+        }
+
+          window.addEventListener('load', resizeParent);
+          window.addEventListener('resize', resizeParent);
+    </script>
+</body>
+</html>
